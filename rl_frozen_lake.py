@@ -70,15 +70,26 @@ class ModelFreeAgent:
 
         if self.algorithm == RLAlgorithm.SARSA:
             # TODO: Implement the SARSA update.
+
+            self.Q(state,action) += alpha * (reward + gamma * self.Q(next_state,next_action) - self.Q(state,action))
+
             # Q(s, a) = alpha * (reward + gamma * Q(s', a') - Q(s, a))
             raise NotImplementedError(f'{self.algorithm.name} not implemented')
         elif self.algorithm == RLAlgorithm.Q_LEARNING:
             # TODO: Implement the Q-Learning update.
+            max_action = np.argmax(self.Q(next_state,),axis=1)
+            self.Q(state,action) += alpha * (reward + gamma * max_action - self.Q(state,action))
+
             # Q(s, a) = alpha * (reward + gamma * max_a' Q(s', a') - Q(s, a))
             # where the max is taken over all possible actions
             raise NotImplementedError(f'{self.algorithm.name} not implemented')
+
         elif self.algorithm == RLAlgorithm.EXPECTED_SARSA:
             # TODO: Implement the Expected SARSA update.
+            expected_action = ...
+            self.Q(state,action) += alpha * (reward + gamma * expected_action - self.Q(state,action))
+
+
             # Q(s, a) = alpha * (reward + gamma * E[Q(s', a')] - Q(s, a))
             # where the expectation E[Q(s', a')] is taken wrt. actions a' of the policy (s' is given by next_state)
             raise NotImplementedError(f'{self.algorithm.name} not implemented')
@@ -177,6 +188,12 @@ if __name__ == '__main__':
             # TODO: For each algorithm independently, set good values for alpha and eps_decay
             
             alpha, eps_decay = None, None
+            if algo == RLAlgorithm.SARSA:
+                print('hi')
+            elif algo == RLAlgorithm.Q_LEARNING:
+                print('hello')
+            elif algo == RLAlgorithm.EXPECTED_SARSA:
+                print('salut')
 
             train_test_agent(algorithm=algo, gamma=gamma, alpha=alpha, eps=eps, eps_decay=eps_decay,
                              num_train_episodes=10_000, num_test_episodes=5_000,
