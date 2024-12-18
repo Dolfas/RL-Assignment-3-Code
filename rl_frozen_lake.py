@@ -47,7 +47,13 @@ class ModelFreeAgent:
         # - with probability self.eps return a random action
         # - otherwise find the action that maximizes self.Q
         # - when testing, do not use epsilon-greedy exploration but always return the greedy action
-
+        if is_training == True:
+            if np.random.uniform(0, 1) < self.eps:
+                return np.random.randrange(1, 4) #check first if the numbers are correct
+            else:
+                return np.argmax(self.Q,axis=1) #returning the greedy action
+        else:
+                return np.argmax(self.Q,axis=1) #returning the greedy action 
 
     def train_step(self, state, action, reward, next_state, next_action, done):
         """
@@ -168,6 +174,7 @@ if __name__ == '__main__':
     for gamma in [0.95, 1]:
         for algo in [RLAlgorithm.SARSA, RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA]:
             # TODO: For each algorithm independently, set good values for alpha and eps_decay
+            
             alpha, eps_decay = None, None
 
             train_test_agent(algorithm=algo, gamma=gamma, alpha=alpha, eps=eps, eps_decay=eps_decay,
