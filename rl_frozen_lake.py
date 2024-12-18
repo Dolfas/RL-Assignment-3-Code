@@ -47,13 +47,14 @@ class ModelFreeAgent:
         # - with probability self.eps return a random action
         # - otherwise find the action that maximizes self.Q
         # - when testing, do not use epsilon-greedy exploration but always return the greedy action
+
         if is_training == True:
             if np.random.uniform(0, 1) < self.eps:
                 return np.random.randrange(1, 4) #check first if the numbers are correct
             else:
-                return np.argmax(self.Q,axis=1) #returning the greedy action
+                return np.argmax(self.Q,axis=1) 
         else:
-                return np.argmax(self.Q,axis=1) #returning the greedy action 
+                return np.argmax(self.Q,axis=1) 
 
     def train_step(self, state, action, reward, next_state, next_action, done):
         """
