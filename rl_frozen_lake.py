@@ -2,6 +2,7 @@ import numpy as np
 import gymnasium as gym
 from frozen_lake_utils import plot_frozenlake_model_free_results
 from enum import Enum
+import random as random
 
 
 class RLAlgorithm(Enum):
@@ -48,13 +49,15 @@ class ModelFreeAgent:
         # - otherwise find the action that maximizes self.Q
         # - when testing, do not use epsilon-greedy exploration but always return the greedy action
 
+        #random.seed(5) #This fixes the random seed for reproducibility
+
         if is_training == True:
-            if np.random.uniform(0, 1) < self.eps:
-                return np.random.randrange(1, 4) #check first if the numbers are correct
+            if random.uniform(0, 1) < self.eps:
+                return random.randrange(0,self.num_actions) 
             else:
-                return np.argmax(self.Q,axis=1) 
+                return np.argmax(self.Q[state,],axis=0) 
         else:
-                return np.argmax(self.Q,axis=1) 
+                return np.argmax(self.Q[state,],axis=0)  
 
     def train_step(self, state, action, reward, next_state, next_action, done):
         """
@@ -71,14 +74,16 @@ class ModelFreeAgent:
         if self.algorithm == RLAlgorithm.SARSA:
             # TODO: Implement the SARSA update.
 
-            self.Q(state,action) += alpha * (reward + gamma * self.Q(next_state,next_action) - self.Q(state,action))
-
+            self.Q[state,action] += self.alpha * (reward + self.gamma * self.Q[next_state,next_action] - self.Q[state,action])
+            
             # Q(s, a) = alpha * (reward + gamma * Q(s', a') - Q(s, a))
-            raise NotImplementedError(f'{self.algorithm.name} not implemented')
+            #raise NotImplementedError(f'{self.algorithm.name} not implemented')
+
         elif self.algorithm == RLAlgorithm.Q_LEARNING:
             # TODO: Implement the Q-Learning update.
-            max_action = np.argmax(self.Q(next_state,),axis=1)
-            self.Q(state,action) += alpha * (reward + gamma * max_action - self.Q(state,action))
+            #max_action = np.argmax(self.Q[next_state,],axis=0)
+            #print(max_action)
+            #self.Q[state,action] += self.alpha * (reward + self.gamma * max_action - self.Q[state,action])
 
             # Q(s, a) = alpha * (reward + gamma * max_a' Q(s', a') - Q(s, a))
             # where the max is taken over all possible actions
@@ -86,8 +91,8 @@ class ModelFreeAgent:
 
         elif self.algorithm == RLAlgorithm.EXPECTED_SARSA:
             # TODO: Implement the Expected SARSA update.
-            expected_action = ...
-            self.Q(state,action) += alpha * (reward + gamma * expected_action - self.Q(state,action))
+            #expected_action = ...
+            #self.Q(state,action) += alpha * (reward + gamma * expected_action - self.Q(state,action))
 
 
             # Q(s, a) = alpha * (reward + gamma * E[Q(s', a')] - Q(s, a))
@@ -189,11 +194,14 @@ if __name__ == '__main__':
             
             alpha, eps_decay = None, None
             if algo == RLAlgorithm.SARSA:
-                print('hi')
+                 alpha = 0.5
+                 eps_decay = 0.995
             elif algo == RLAlgorithm.Q_LEARNING:
-                print('hello')
+                 alpha = 0.4
+                 eps_decay = 0.99
             elif algo == RLAlgorithm.EXPECTED_SARSA:
-                print('salut')
+                 alpha = 0.1
+                 eps_decay = 0.99
 
             train_test_agent(algorithm=algo, gamma=gamma, alpha=alpha, eps=eps, eps_decay=eps_decay,
                              num_train_episodes=10_000, num_test_episodes=5_000,
