@@ -3,6 +3,7 @@ import gymnasium as gym
 from frozen_lake_utils import plot_frozenlake_model_free_results
 from enum import Enum
 import random as random
+random.seed(5)
 
 
 class RLAlgorithm(Enum):
@@ -49,7 +50,7 @@ class ModelFreeAgent:
         # - otherwise find the action that maximizes self.Q
         # - when testing, do not use epsilon-greedy exploration but always return the greedy action
 
-        #random.seed(5) #This fixes the random seed for reproducibility
+         #This fixes the random seed for reproducibility
 
         if is_training == True:
             if random.uniform(0, 1) < self.eps:
@@ -194,15 +195,14 @@ if __name__ == '__main__':
             
             alpha, eps_decay = None, None
             if algo == RLAlgorithm.SARSA:
-                 alpha = 0.5
-                 eps_decay = 0.995
+                 alpha = 0.4
+                 eps_decay = 0.999
             elif algo == RLAlgorithm.Q_LEARNING:
                  alpha = 0.4
                  eps_decay = 0.99
             elif algo == RLAlgorithm.EXPECTED_SARSA:
                  alpha = 0.1
                  eps_decay = 0.99
-
             train_test_agent(algorithm=algo, gamma=gamma, alpha=alpha, eps=eps, eps_decay=eps_decay,
                              num_train_episodes=10_000, num_test_episodes=5_000,
                              max_episode_length=200, savefig=False)
