@@ -82,23 +82,24 @@ class ModelFreeAgent:
 
         elif self.algorithm == RLAlgorithm.Q_LEARNING:
             # TODO: Implement the Q-Learning update.
-            #max_action = np.argmax(self.Q[next_state,],axis=0)
-            #print(max_action)
-            #self.Q[state,action] += self.alpha * (reward + self.gamma * max_action - self.Q[state,action])
+            max_val = np.max(self.Q[next_state,],axis=0)
+            self.Q[state,action] += self.alpha * (reward + self.gamma * max_val - self.Q[state,action])
 
             # Q(s, a) = alpha * (reward + gamma * max_a' Q(s', a') - Q(s, a))
             # where the max is taken over all possible actions
-            raise NotImplementedError(f'{self.algorithm.name} not implemented')
+            #raise NotImplementedError(f'{self.algorithm.name} not implemented')
 
         elif self.algorithm == RLAlgorithm.EXPECTED_SARSA:
             # TODO: Implement the Expected SARSA update.
-            #expected_action = ...
-            #self.Q(state,action) += alpha * (reward + gamma * expected_action - self.Q(state,action))
+            action_probabilities = np.ones(self.num_actions) * (self.eps / self.num_actions)
+            action_probabilities[np.argmax(self.Q[next_state,])] += (1 - self.eps)  #completed policy probabilities
+            expectation = sum(action_probabilities * self.Q[next_state,])
+            self.Q[state,action] += self.alpha * (reward + self.gamma * expectation - self.Q[state,action]) 
 
 
             # Q(s, a) = alpha * (reward + gamma * E[Q(s', a')] - Q(s, a))
             # where the expectation E[Q(s', a')] is taken wrt. actions a' of the policy (s' is given by next_state)
-            raise NotImplementedError(f'{self.algorithm.name} not implemented')
+            #raise NotImplementedError(f'{self.algorithm.name} not implemented')
 
 
     def run_episode(self, training, render=False):
@@ -189,20 +190,38 @@ def train_test_agent(algorithm, gamma, alpha, eps, eps_decay,
 
 if __name__ == '__main__':
     eps = 1
-    for gamma in [0.95, 1]:
-        for algo in [RLAlgorithm.SARSA, RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA]:
+    for gamma in [0.95,1]:
+        for algo in [RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA, RLAlgorithm.SARSA]:
+
             # TODO: For each algorithm independently, set good values for alpha and eps_decay
             
             alpha, eps_decay = None, None
+
             if algo == RLAlgorithm.SARSA:
-                 alpha = 0.4
-                 eps_decay = 0.999
+                if gamma == 0.95:
+                    alpha = 0.4
+                    eps_decay = 0.998
+                else: 
+                    alpha = 0.15
+                    eps_decay = 0.998
+
             elif algo == RLAlgorithm.Q_LEARNING:
-                 alpha = 0.4
-                 eps_decay = 0.99
+                 if gamma == 0.95:
+                        alpha = 0.4
+                        eps_decay = 0.997
+                 else:
+                        alpha = 0.07
+                        eps_decay = 0.999           
+
             elif algo == RLAlgorithm.EXPECTED_SARSA:
-                 alpha = 0.1
-                 eps_decay = 0.99
+                 if gamma == 0.95:
+                     alpha = 0.35
+                     eps_decay = 0.998
+                 else:
+                     alpha = 0.15
+                     eps_decay = 0.998  
+
+
             train_test_agent(algorithm=algo, gamma=gamma, alpha=alpha, eps=eps, eps_decay=eps_decay,
                              num_train_episodes=10_000, num_test_episodes=5_000,
                              max_episode_length=200, savefig=False)
