@@ -3,7 +3,7 @@ import gymnasium as gym
 from frozen_lake_utils import plot_frozenlake_model_free_results
 from enum import Enum
 import random as random
-random.seed(5)
+
 
 
 class RLAlgorithm(Enum):
@@ -190,8 +190,9 @@ def train_test_agent(algorithm, gamma, alpha, eps, eps_decay,
 
 if __name__ == '__main__':
     eps = 1
+    random.seed(5)
     for gamma in [0.95,1]:
-        for algo in [RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA, RLAlgorithm.SARSA]:
+        for algo in [ RLAlgorithm.SARSA, RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA]:
 
             # TODO: For each algorithm independently, set good values for alpha and eps_decay
             
