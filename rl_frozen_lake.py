@@ -191,7 +191,7 @@ def train_test_agent(algorithm, gamma, alpha, eps, eps_decay,
 if __name__ == '__main__':
     eps = 1
     random.seed(5)
-    for gamma in [0.95,1]:
+    for gamma in [0.95, 1.0]:
         for algo in [ RLAlgorithm.SARSA, RLAlgorithm.Q_LEARNING, RLAlgorithm.EXPECTED_SARSA]:
 
             # TODO: For each algorithm independently, set good values for alpha and eps_decay
@@ -212,7 +212,7 @@ if __name__ == '__main__':
                         eps_decay = 0.997
                  else:
                         alpha = 0.07
-                        eps_decay = 0.999           
+                        eps_decay = 0.999  
 
             elif algo == RLAlgorithm.EXPECTED_SARSA:
                  if gamma == 0.95:
