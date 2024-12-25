@@ -4,8 +4,7 @@ from frozen_lake_utils import plot_frozenlake_model_free_results
 from enum import Enum
 import random as random
 
-
-
+    
 class RLAlgorithm(Enum):
     SARSA = 'SARSA'
     Q_LEARNING = 'Q-Learning'
@@ -25,11 +24,15 @@ class ModelFreeAgent:
         self.max_episode_length = max_episode_length
         self.test_reward, self.train_reward = None, None
 
+
+        random.seed(5)
+        np.random.seed(5)
+
         self.env = gym.make('FrozenLake-v1', desc=None, map_name="4x4",
                             is_slippery=True, render_mode='human').unwrapped
         self.num_actions = self.env.action_space.n
         self.num_states = self.env.observation_space.n
-
+    
         self.Q = np.zeros((self.num_states, self.num_actions))
 
 
@@ -49,8 +52,6 @@ class ModelFreeAgent:
         # - with probability self.eps return a random action
         # - otherwise find the action that maximizes self.Q
         # - when testing, do not use epsilon-greedy exploration but always return the greedy action
-
-         #This fixes the random seed for reproducibility
 
         if is_training == True:
             if random.uniform(0, 1) < self.eps:
